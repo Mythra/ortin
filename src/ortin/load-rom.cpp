@@ -27,12 +27,12 @@
 int load_nds_rom(ISNitro *nitro, const TCHAR *filename)
 {
 	errno = 0;
-	FILE *f = _tfopen(filename, "rb");
+	FILE *f = _tfopen(filename, _T("rb"));
 	if (!f) {
 		int err = errno;
 		if (err == 0)
 			err = EIO;
-		fprintf(stderr, "*** ERROR opening '%s': %s\n", filename, strerror(err));
+		fprintf(stderr, "*** ERROR opening '%ls': %s\n", filename, strerror(err));
 		return err;
 	}
 
@@ -40,7 +40,7 @@ int load_nds_rom(ISNitro *nitro, const TCHAR *filename)
 	off64_t fileSize = ftello(f);
 	rewind(f);
 	if (fileSize > 256*1024*1024) {
-		fprintf(stderr, "*** ERROR: ROM image '%s' is larger than 256 MB.\n", filename);
+		fprintf(stderr, "*** ERROR: ROM image '%ls' is larger than 256 MB.\n", filename);
 		fclose(f);
 		return ENOMEM;
 	}

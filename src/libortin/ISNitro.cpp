@@ -8,9 +8,6 @@
 
 #include "ISNitro.hpp"
 
-// C includes.
-#include <unistd.h>	// FIXME: usleep() for Windows
-
 // C includes. (C++ namespace)
 #include <cassert>
 #include <cstring>
@@ -19,8 +16,11 @@
 
 // C++ includes.
 #include <algorithm>
+#include <chrono>
 #include <memory>
+#include <thread>
 using std::unique_ptr;
+using namespace std::chrono_literals;
 
 #include "byteswap.h"
 
@@ -400,7 +400,7 @@ int ISNitro::waitForDebuggerROM(void)
 		}
 
 		// Wait 10ms and try again.
-		usleep(10000);
+		std::this_thread::sleep_for(10ms);
 	}
 
 	// Debugger ROM failed to initialize...

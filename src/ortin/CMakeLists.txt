@@ -1,5 +1,5 @@
 # Ortin command line tool
-CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 CMAKE_POLICY(SET CMP0048 NEW)
 IF(POLICY CMP0063)
 	# CMake 3.3: Enable symbol visibility presets for all
@@ -19,6 +19,17 @@ SET(ortin_H
 	load-rom.hpp
 	avmode.hpp
 	)
+
+IF(MSVC)
+	list(APPEND ortin_SRCS getopt-msvc/getopt.c)
+	list(APPEND ortin_H getopt-msvc/getopt.h)
+	add_definitions(-DLOCAL_GETOPT_MSVC)	
+ENDIF(MSVC)
+IF(MINGW)
+	list(APPEND ortin_SRCS getopt-mingw/getoptW.c)
+	list(APPEND ortin_H getopt-mingw/getoptW.h)
+	add_definitions(-DLOCAL_GETOPT_MINGW)	
+ENDIF(MINGW)
 
 #########################
 # Build the executable. #
@@ -49,10 +60,6 @@ TARGET_INCLUDE_DIRECTORIES(ortin
 	)
 
 TARGET_LINK_LIBRARIES(ortin PRIVATE libortin)
-# TODO: getopt_msvc
-#IF(MSVC)
-#	TARGET_LINK_LIBRARIES(ortin PRIVATE getopt_msvc)
-#ENDIF(MSVC)
 
 # CMake-3.7.2 doesn't add include paths to windres.
 IF(MINGW)

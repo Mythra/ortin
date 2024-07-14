@@ -7,13 +7,23 @@
  ***************************************************************************/
 
 #include "config.version.h"
-#include "git.h"
+#include "git_version.h"
+#ifdef LOCAL_GETOPT_MSVC
+#include "getopt-msvc/getopt.h"
+#endif
+#ifdef LOCAL_GETOPT_MINGW
+#include "getopt-mingw/getoptW.h"
+#define getopt_long getoptW_long
+#endif
 
 // C includes.
+#ifndef LOCAL_GETOPT_MSVC
+#ifndef LOCAL_GETOPT_MINGW
 #include <getopt.h>
+#endif
+#endif
 #include <stdint.h>
 #include <stdlib.h>
-#include <unistd.h>	// FIXME: usleep() for Windows
 
 // C++ includes. (C namespace)
 #include <cerrno>
@@ -23,7 +33,10 @@
 
 // C++ includes.
 #include <algorithm>
+#include <chrono>
 #include <locale>
+#include <thread>
+using namespace std::chrono_literals;
 
 // libusb
 #include <libusb.h>
@@ -173,8 +186,8 @@ int ORTIN_CDECL _tmain(int argc, TCHAR *argv[])
 					return EXIT_FAILURE;
 				}
 
-				char *endptr = nullptr;
-				bg_color = strtoul(optarg, &endptr, 16);
+				wchar_t *endptr = nullptr;
+				bg_color = wcstol(optarg, &endptr, 16);
 				if (*endptr != '\0') {
 					print_error(argv[0], _T("background color is invalid (should be 24-bit hex)"));
 					return EXIT_FAILURE;
@@ -250,7 +263,7 @@ int ORTIN_CDECL _tmain(int argc, TCHAR *argv[])
 	} else if (!_tcscmp(argv[optind], _T("reset"))) {
 		// Reset: Reset the DS CPU only.
 		nitro->ndsReset(true);
-		usleep(500000);
+		std::this_thread::sleep_for(500ms);
 		ret = nitro->ndsReset(false);
 	} else if (!_tcscmp(argv[optind], _T("load"))) {
 		// Load a ROM image.
@@ -274,7 +287,7 @@ int ORTIN_CDECL _tmain(int argc, TCHAR *argv[])
 			print_error(argv[0], _T("Slot number not specified"));
 			ret = EXIT_FAILURE;
 		} else {
-			int _slot = strtol(argv[optind+1], nullptr, 10);
+			int _slot = wcstol(argv[optind+1], nullptr, 10);
 			if (_slot == 1 || _slot == 2) {
 				ret = nitro->setSlotPower(_slot, true);
 			} else {
@@ -288,7 +301,7 @@ int ORTIN_CDECL _tmain(int argc, TCHAR *argv[])
 			print_error(argv[0], _T("Slot number not specified"));
 			ret = EXIT_FAILURE;
 		} else {
-			int _slot = strtol(argv[optind+1], nullptr, 10);
+			int _slot = wcstol(argv[optind+1], nullptr, 10);
 			if (_slot == 1 || _slot == 2) {
 				ret = nitro->setSlotPower(_slot, false);
 			} else {

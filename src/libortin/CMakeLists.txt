@@ -1,5 +1,5 @@
 # libortin: IS-NITRO management library
-CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 CMAKE_POLICY(SET CMP0048 NEW)
 IF(POLICY CMP0063)
 	# CMake 3.3: Enable symbol visibility presets for all
@@ -61,7 +61,7 @@ ADD_CUSTOM_TARGET(bins DEPENDS ${h_files})
 ADD_LIBRARY(libortin STATIC
 	${libortin_SRCS} ${libortin_H}
 	)
-SET_TARGET_PROPERTIES(libortin PROPERTIES OUTPUT_NAME "ortin")
+SET_TARGET_PROPERTIES(libortin PROPERTIES OUTPUT_NAME "libortin")
 ADD_DEPENDENCIES(libortin bins)
 
 # Include paths:
